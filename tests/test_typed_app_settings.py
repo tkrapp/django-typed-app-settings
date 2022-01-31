@@ -8,8 +8,11 @@ from typing import Type, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
-from typed_app_settings import UndefinedValue, typed_settings_prefix
-from typed_app_settings.lib import typed_settings_dict
+from typed_app_settings import (
+    UndefinedValue,
+    typed_settings_dict,
+    typed_settings_prefix,
+)
 
 django_settings.configure(
     DEBUG=True,

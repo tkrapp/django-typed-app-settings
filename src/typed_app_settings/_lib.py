@@ -20,7 +20,7 @@ _CLASS_DECORATOR = Callable[[Type[_T]], Type[_T]]
 
 
 class _SettingNotFoundError(Exception):
-    ...
+    pass
 
 
 class UndefinedValue:
@@ -49,12 +49,14 @@ class UndefinedValue:
 
 
 def _import_module(path: str, /) -> types.ModuleType:
+    """Import a module from a provided path."""
     package, _, module_name = path.rpartition(".")
 
     return importlib.import_module(name=module_name, package=package)
 
 
 def _import_class(path: str, /) -> Type:
+    """Import a class from a provided path."""
     module_path, _, class_name = path.rpartition(".")
     package, _, module_name = module_path.rpartition(".")
     module = importlib.import_module(name=module_name, package=package)
@@ -63,6 +65,10 @@ def _import_class(path: str, /) -> Type:
 
 
 def _raise_on_set_attribute(self, attr_name, value: Any):
+    """
+    Raise AttributeError when an attribute is set on the settings instance.
+    Except the attr_name ends with _ATTR_RESOLVED_POSTFIX.
+    """
     if not attr_name.endswith(_ATTR_RESOLVED_POSTFIX):
         raise AttributeError(f"Can't set attribute {attr_name}")
     self.__dict__[attr_name] = value
@@ -98,30 +104,38 @@ def _typed_settings_decorator(
         type_hints = get_annotations(cls)
 
         for attr_name, value in inspect.getmembers(cls):
+            # Skip dunder attributes and methods.
             if (
                 attr_name.startswith("__") and attr_name.endswith("__")
             ) or not attr_name.isupper():
                 continue
 
+            # Define names for the "real" attribute and the resolved value
             hidden_attr_name = f"_{attr_name}"
             resolved_attr_name = f"_{attr_name}{_ATTR_RESOLVED_POSTFIX}"
 
+            # Property getter which substitutes the class member and handles
+            # overriding of settings via settings.py.
             def getter(
                 self,
                 attr_name: str = attr_name,
                 hidden_attr_name: str = hidden_attr_name,
                 resolved_attr_name: str = resolved_attr_name,
             ) -> Any:
+                # Check if the setting was resolved previously and return that
+                # already resolved value.
                 value = getattr(self, resolved_attr_name)
                 if value is not UndefinedValue:
                     return value
 
                 annotation = type_hints.get(attr_name)
+                # Check if the setting is overridden via settings.py.
                 try:
                     value = django_settings_getter(attr_name)
                 except _SettingNotFoundError:
                     value = getattr(self, hidden_attr_name)
 
+                # Perform checks and "magical" behaviours.
                 if isinstance(value, UndefinedValue):
                     raise ImproperlyConfigured(
                         f"{attr_name!r} needs to be configured in your settings module"
@@ -131,6 +145,7 @@ def _typed_settings_decorator(
                 elif _check_type(annotation) and isinstance(value, str):
                     value = _import_class(value)
 
+                # Store the resolved setting in the instance.
                 setattr(self, resolved_attr_name, value)
 
                 return value
