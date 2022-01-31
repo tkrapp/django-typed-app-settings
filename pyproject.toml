@@ -26,6 +26,7 @@ dynamic = ["version", "description"]
 license = {file = "LICENSE"}
 name = "typed_app_settings"
 readme = "README.md"
+requires-python = ">=3.8"
 
 [project.urls]
 Home = "https://github.com/tkrapp/django-typed-app-settings"
