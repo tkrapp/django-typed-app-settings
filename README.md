@@ -1,6 +1,6 @@
 # typed_app_settings
 
-A small django module for app specific settings (using type annotations)
+A small django module for app specific settings (using type annotations).
 
 ## Installation
 
