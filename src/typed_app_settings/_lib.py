@@ -236,3 +236,10 @@ def typed_settings_dict(settings_attr: str) -> _CLASS_DECORATOR:
         raise _SettingNotFoundError()
 
     return _typed_settings_decorator(django_settings_getter)
+
+
+def undefined() -> Any:
+    """
+    Mark a property as undefined so it needs to be defined in the project's settings.py
+    """
+    return UndefinedValue()

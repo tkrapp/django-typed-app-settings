@@ -8,11 +8,7 @@ from typing import Type, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
-from typed_app_settings import (
-    UndefinedValue,
-    typed_settings_dict,
-    typed_settings_prefix,
-)
+from typed_app_settings import typed_settings_dict, typed_settings_prefix, undefined
 
 django_settings.configure(
     DEBUG=True,
@@ -55,8 +51,8 @@ class PrefixSettings:
     CLASS_SETTING_4: Type = list
     MODULE_SETTING_1: types.ModuleType = os.path
     MODULE_SETTING_2: types.ModuleType = os.path
-    UNCONFIGURED_OVERRIDE: str = UndefinedValue()  # type: ignore
-    UNCONFIGURED_SETTING: int = UndefinedValue()  # type: ignore
+    UNCONFIGURED_OVERRIDE: str = undefined()
+    UNCONFIGURED_SETTING: int = undefined()
 
 
 @typed_settings_dict("MY_SECOND_APP")
@@ -69,8 +65,8 @@ class DictSettings:
     CLASS_SETTING_4: Type = list
     MODULE_SETTING_1: types.ModuleType = os.path
     MODULE_SETTING_2: types.ModuleType = os.path
-    UNCONFIGURED_OVERRIDE: str = UndefinedValue()  # type: ignore
-    UNCONFIGURED_SETTING: int = UndefinedValue()  # type: ignore
+    UNCONFIGURED_OVERRIDE: str = undefined()
+    UNCONFIGURED_SETTING: int = undefined()
 
 
 class Common:

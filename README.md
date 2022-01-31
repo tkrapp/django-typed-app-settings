@@ -2,6 +2,15 @@
 
 A small django module for app specific settings (using type annotations).
 
+## Why another app settings module for Django?
+
+With other existing approaches to make your reusable django apps configurable
+using the global project's `settings.py` file, it is not possible to get proper
+IDE support including type checking.
+
+This module aims to provide IDE support (mainly auto completion) and static type
+checking (for example with mypy or pylance).
+
 ## Installation
 
 Installation is easy. Just `pip install` the module like so:
@@ -16,13 +25,13 @@ pip install typed-app-settings
 
    ```python
    # my_app/conf.py
-   from typed_app_settings import UndefinedValue, typed_app_settings_prefix
+   from typed_app_settings import typed_app_settings_prefix, undefined
 
    @typed_app_settings_prefix("MY_APP")  # see below for the two alternative decorators
    class Settings:
        SOME_STRING: str = "This is a cool string!"
        SOME_NUMBER: int = 30
-       SOME_URL: str = UndefinedValue()  # type: ignore  (see caveats)
+       SOME_URL: str = undefined()
 
    settings = Settings()
    ```
@@ -106,19 +115,19 @@ MY_APP = {
 ...
 ```
 
-## Other classes
+## Functions
 
-### UndefinedValue
+### undefined
 
-This class is used to indicate that a setting must be configured in your `settings.py`.
+This function is used to indicate that a setting must be configured in your `settings.py`.
 
 ```python
-from typed_apps_settings import UndefinedValue, typed_app_settings_prefix
+from typed_apps_settings import typed_app_settings_prefix, undefined
 
 @typed_app_settings_prefix("MY_APP")
 class Settings:
     ...
-    THIS_MUST_BE_CONFIGURED: str = UndefinedValue()
+    THIS_MUST_BE_CONFIGURED: str = undefined()
     ...
 
 settings = Settings()
@@ -143,7 +152,7 @@ which is imported on first attribute access.
 # my_app/conf.py
 from types import ModuleType
 
-from typed_apps_settings import UndefinedValue, typed_app_settings_prefix
+from typed_apps_settings import typed_app_settings_prefix
 
 from . import forms
 
@@ -188,7 +197,7 @@ a class instead of a module.
 # my_app/conf.py
 import typing
 
-from typed_apps_settings import UndefinedValue, typed_app_settings_prefix
+from typed_apps_settings import typed_app_settings_prefix
 
 from .forms import CustomerForm
 
@@ -218,61 +227,27 @@ def my_view(request):
     ...
 ```
 
-## Why another app settings module for Django?
-
-With other existing approaches to make your reusable django apps configurable
-using the global project's `settings.py` file, it is not possible to get proper
-ide support including type checking.
-
-This module aims to provide ide support (mainly auto completion) and static type
-checking (for example with mypy or pylance).
-
 ## Caveats
-
-Currently I only know of two real caveats when using this module.
-Please feel free to submit a pull request, if you think you have solved it.
-
-### UndefinedValue and type annotations
-
-When using the class `UndefinedValue` to indicate that a setting must be
-configured in the project's settings.py, it is not really possible to have error
-free type checking in the class definition.
-
-```python
-from typed_apps_settings import UndefinedValue, typed_app_settings_prefix
-
-@typed_app_settings_prefix("MY_APP")
-class Settings:
-    ...
-    THIS_MUST_BE_CONFIGURED: str = UndefinedValue()  # Expression of type "UndefinedValue" cannot be assigned to declared type "str"
-                                                     #   "UndefinedValue" is incompatible with "str"PylancereportGeneralTypeIssues
-    ...
-```
-
-What you can do instead is to disable type checking for this concrete line like so:
-
-```python
-from typed_apps_settings import UndefinedValue, typed_app_settings_prefix
-
-@typed_app_settings_prefix("MY_APP")
-class Settings:
-    ...
-    THIS_MUST_BE_CONFIGURED: str = UndefinedValue()  # type: ingore
-    ...
-```
 
 ### No runtime type checking (right now)
 
 In the current version, there is no automatic runtime type checking, but it may
 be implemented in a future version.
 
-
 ## Changelog
 
 ### 0.1
 
-Initial release
+- Initial release
 
 ### 0.1-post1
 
-Update classifiers
+- Update classifiers
+
+### 0.2
+
+- Add function `undefined` which provides better IDE support.
+  The class `UndefinedValue` should not be instantiated directly and may be
+  changed or even removed in the future.
+- Update README
+- Update classifiers
