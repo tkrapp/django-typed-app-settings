@@ -1,9 +1,15 @@
 import os
 import pathlib
+import sys
 import types
 import unittest
 from collections import deque
-from collections.abc import Sequence
+
+if sys.version_info <= (3, 8):
+    from typing import Sequence
+else:
+    from collections.abc import Sequence
+
 from typing import Any, Type, Union
 
 from django.conf import settings as django_settings
