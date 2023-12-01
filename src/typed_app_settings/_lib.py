@@ -29,13 +29,13 @@ class UndefinedValue:
     settings module.
     """
 
-    def __set_name__(self, owner: Type, name: str):
+    def __set_name__(self, owner: Type[object], name: str):
         self.name = name
 
     def __raise(self):
         raise ImproperlyConfigured(f"The attribute {self.name} is not configured")
 
-    def __eq__(self, _other):
+    def __eq__(self, _other: Any):
         return self.__raise()
 
     def __bool__(self):
@@ -55,16 +55,16 @@ def _import_module(path: str, /) -> types.ModuleType:
     return importlib.import_module(name=module_name, package=package)
 
 
-def _import_class(path: str, /) -> Type:
+def _import_class(path: str, /) -> Type[object]:
     """Import a class from a provided path."""
     module_path, _, class_name = path.rpartition(".")
     package, _, module_name = module_path.rpartition(".")
     module = importlib.import_module(name=module_name, package=package)
 
-    return cast(Type, getattr(module, class_name))
+    return cast(Type[object], getattr(module, class_name))
 
 
-def _raise_on_set_attribute(self, attr_name, value: Any):
+def _raise_on_set_attribute(self: object, attr_name: str, value: Any):
     """
     Raise AttributeError when an attribute is set on the settings instance.
     Except the attr_name ends with _ATTR_RESOLVED_POSTFIX.
@@ -99,7 +99,7 @@ def _check_type(annotation: Any) -> bool:
 
 def _typed_settings_decorator(
     django_settings_getter: Callable[[str], Any]
-) -> _CLASS_DECORATOR:
+) -> _CLASS_DECORATOR[_T]:
     def _class_decorator(cls: Type[_T]) -> Type[_T]:
         type_hints = get_annotations(cls)
 
@@ -117,7 +117,7 @@ def _typed_settings_decorator(
             # Property getter which substitutes the class member and handles
             # overriding of settings via settings.py.
             def getter(
-                self,
+                self: object,
                 attr_name: str = attr_name,
                 hidden_attr_name: str = hidden_attr_name,
                 resolved_attr_name: str = resolved_attr_name,
@@ -150,7 +150,7 @@ def _typed_settings_decorator(
 
                 return value
 
-            def setter(self, value: Any, attr_name: str = attr_name):
+            def setter(self: object, value: Any, attr_name: str = attr_name):
                 raise AttributeError(f"Can't set attribute '{attr_name}'")
 
             prop = property(getter, setter)
@@ -164,7 +164,7 @@ def _typed_settings_decorator(
     return _class_decorator
 
 
-def typed_settings_prefix(prefix: str) -> _CLASS_DECORATOR:
+def typed_settings_prefix(prefix: str) -> _CLASS_DECORATOR[_T]:
     """
     Class decorator which transforms all attributes of the decorated class
     into properties which perform the required lookups in the django settings
@@ -201,7 +201,7 @@ def typed_settings_prefix(prefix: str) -> _CLASS_DECORATOR:
     return _typed_settings_decorator(django_settings_getter)
 
 
-def typed_settings_dict(settings_attr: str) -> _CLASS_DECORATOR:
+def typed_settings_dict(settings_attr: str) -> _CLASS_DECORATOR[_T]:
     """
     Class decorator which transforms all attributes of the decorated class
     into properties which perform the required lookups in the django settings

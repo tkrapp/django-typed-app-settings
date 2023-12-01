@@ -4,7 +4,7 @@ import types
 import unittest
 from collections import deque
 from collections.abc import Sequence
-from typing import Type, Union
+from typing import Any, Type, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
@@ -47,9 +47,9 @@ class PrefixSettings:
     STR_SETTING_1: str = "Setting 1"
     STR_SETTING_2: str = "Setting 2"
     CLASS_SETTING_1: Type[SomeBaseClass] = SomeClass
-    CLASS_SETTING_2: Type[Sequence] = list
-    CLASS_SETTING_3: Type = str
-    CLASS_SETTING_4: Type = list
+    CLASS_SETTING_2: Type[Sequence[Any]] = list
+    CLASS_SETTING_3: Type[object] = str
+    CLASS_SETTING_4: Type[object] = list
     MODULE_SETTING_1: types.ModuleType = os.path
     MODULE_SETTING_2: types.ModuleType = os.path
     UNCONFIGURED_OVERRIDE: str = undefined()
@@ -61,9 +61,9 @@ class DictSettings:
     STR_SETTING_1: str = "Setting 1"
     STR_SETTING_2: str = "Setting 2"
     CLASS_SETTING_1: Type[SomeBaseClass] = SomeClass
-    CLASS_SETTING_2: Type[Sequence] = list
-    CLASS_SETTING_3: Type = str
-    CLASS_SETTING_4: Type = list
+    CLASS_SETTING_2: Type[Sequence[Any]] = list
+    CLASS_SETTING_3: Type[object] = str
+    CLASS_SETTING_4: Type[object] = list
     MODULE_SETTING_1: types.ModuleType = os.path
     MODULE_SETTING_2: types.ModuleType = os.path
     UNCONFIGURED_OVERRIDE: str = undefined()
