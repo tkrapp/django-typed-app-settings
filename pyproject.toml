@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "Development Status :: 3 - Alpha"
+  "Development Status :: 3 - Alpha",
 ]
 dependencies = ["django >= 3.0"]
 dynamic = ["version", "description"]
@@ -33,3 +33,6 @@ Home = "https://github.com/tkrapp/django-typed-app-settings"
 
 [project.optional-dependencies]
 dev = ["black"]
+
+[tool.isort]
+profile = "black"
