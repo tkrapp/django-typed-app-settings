@@ -228,9 +228,9 @@ def typed_settings_dict(settings_attr: str) -> _CLASS_DECORATOR[_T]:
     <module 'os' from '...'>
     """
 
-    settings_dict = getattr(django_settings, settings_attr, None)
-
     def django_settings_getter(attr_name: str) -> Any:
+        settings_dict = getattr(django_settings, settings_attr, None)
+
         if settings_dict and attr_name in settings_dict:
             return settings_dict[attr_name]
         raise _SettingNotFoundError()
