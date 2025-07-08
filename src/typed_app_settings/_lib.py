@@ -16,7 +16,7 @@ else:
 
 _T = TypeVar("_T")
 _ATTR_RESOLVED_POSTFIX = "__resolved"
-_CLASS_DECORATOR = Callable[[Type[_T]], Type[_T]]
+_ClassDecorator = Callable[[Type[_T]], Type[_T]]
 
 
 class _SettingNotFoundError(Exception):
@@ -99,7 +99,7 @@ def _check_type(annotation: Any) -> bool:
 
 def _typed_settings_decorator(
     django_settings_getter: Callable[[str], Any]
-) -> _CLASS_DECORATOR[_T]:
+) -> _ClassDecorator[_T]:
     def _class_decorator(cls: Type[_T]) -> Type[_T]:
         type_hints = get_annotations(cls)
 
@@ -164,7 +164,7 @@ def _typed_settings_decorator(
     return _class_decorator
 
 
-def typed_settings_prefix(prefix: str) -> _CLASS_DECORATOR[_T]:
+def typed_settings_prefix(prefix: str) -> _ClassDecorator[_T]:
     """
     Class decorator which transforms all attributes of the decorated class
     into properties which perform the required lookups in the django settings
@@ -201,7 +201,7 @@ def typed_settings_prefix(prefix: str) -> _CLASS_DECORATOR[_T]:
     return _typed_settings_decorator(django_settings_getter)
 
 
-def typed_settings_dict(settings_attr: str) -> _CLASS_DECORATOR[_T]:
+def typed_settings_dict(settings_attr: str) -> _ClassDecorator[_T]:
     """
     Class decorator which transforms all attributes of the decorated class
     into properties which perform the required lookups in the django settings

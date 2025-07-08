@@ -1,9 +1,16 @@
 import functools
 import sys
 import types
+from typing import Any, Mapping, Optional
 
 
-def get_annotations(obj, *, globals=None, locals=None, eval_str=False):
+def get_annotations(
+    obj: Any,
+    *,
+    globals: Optional[Mapping[str, Any]] = None,  # pylint: disable=redefined-builtin
+    locals: Optional[Mapping[str, Any]] = None,  # pylint: disable=redefined-builtin
+    eval_str: bool = False,
+) -> dict[str, Any]:
     """
     Taken from https://github.com/python/cpython/blob/3.10/Lib/inspect.py
 
